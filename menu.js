@@ -13,7 +13,7 @@ const MENU = [
   { name:"바닐라 라떼", opt:"hot/ice", en:"Vanilla Latte", price:{R:"5,000",L:"5,600"}, desc:"찐~한 바닐라향과 은은한 단맛", add:OAT },
   { name:"돌체 라떼", opt:"hot/ice", en:"Dolce Latte", price:{R:"5,000",L:"5,600"}, desc:"연유가 들어간 부드러운 단맛의 라떼", add:OAT },
   { name:"디카페인 콜드브루", opt:"only ice", en:"Decaf Cold Brew", price:{R:"4,500",L:"5,100"}, desc:SUAN },
-  { name:"디카페인 콜드브루 라떼", opt:"only ice", en:"Decaf Cold Brew Latte", price:{R:"5,500",L:"6,100"}, desc:SUAN, add:OAT },
+  { name:"디카페인 콜드브루 라떼", opt:"only ice", en:"Decaf Cold Brew Latte", price:{R:"5,000",L:"5,600"}, desc:SUAN, add:OAT },
   { name:"파라마운틴 아포가토", en:"Paramountain Affogato", price:"6,000", desc:"인디샷의 다크 에스프레소와 산처럼 쌓인 바닐라 아이스크림" },
   { name:"카푸치노", opt:"only hot", en:"Cappuccino", price:"4,700" },
   { name:"모카 라떼", opt:"hot/ice", en:"Mocha Latte", price:{R:"6,000",L:"6,600"}, desc:"인디샷만의 초코 베이스에 에스프레소를 더한 달콤쌉쌀 라떼" },
