@@ -18,16 +18,16 @@
   h2 { font-size:17pt; font-weight:800; letter-spacing:.04em; margin:0 0 3.5mm; padding-bottom:1.2mm;
        border-bottom:0.5mm solid #111; }
   h2 + .item { margin-top:0; }
-  .sec { margin-bottom:5mm; }
-  .item { margin-bottom:4.2mm; }
+  .sec { margin-bottom:calc(5mm * var(--g,1)); }
+  .item { margin-bottom:calc(4.2mm * var(--g,1)); }
   .row { display:flex; justify-content:space-between; align-items:baseline; gap:3mm; }
-  .name { font-size:11.5pt; font-weight:700; }
-  .opt { font-size:7.5pt; font-weight:500; margin-left:1mm; }
-  .price { font-size:10.5pt; font-weight:600; white-space:nowrap; text-align:right; line-height:1.35; }
-  .price small { font-size:7.5pt; margin-right:1mm; }
-  .en { font-size:8.5pt; color:#444; margin-top:.4mm; }
-  .desc { font-size:7.5pt; color:#666; margin-top:.6mm; line-height:1.45; }
-  .add { font-size:7.5pt; color:#666; text-align:right; margin-top:.6mm; }
+  .name { font-size:calc(11.5pt * var(--k,1)); font-weight:700; }
+  .opt { white-space:nowrap; font-size:calc(7.5pt * var(--k,1)); font-weight:500; margin-left:1mm; }
+  .price { font-size:calc(10.5pt * var(--k,1)); font-weight:600; white-space:nowrap; text-align:right; line-height:1.35; }
+  .price small { font-size:calc(7.5pt * var(--k,1)); margin-right:1mm; }
+  .en { font-size:calc(8.5pt * var(--k,1)); color:#444; margin-top:.4mm; }
+  .desc { font-size:calc(7.5pt * var(--k,1)); color:#666; margin-top:.6mm; line-height:1.45; }
+  .add { font-size:calc(7.5pt * var(--k,1)); color:#666; text-align:right; margin-top:.6mm; }
   .new { display:inline-block; font-size:6.5pt; font-weight:800; letter-spacing:.06em; color:#fff; background:#111;
          border-radius:1mm; padding:.3mm 1.3mm; margin-left:1.5mm; vertical-align:1.5pt; }
   .foot { position:absolute; left:12mm; right:12mm; bottom:8mm; display:flex; justify-content:space-between;
@@ -77,12 +77,12 @@ const alc = sec("alcohol").items;
 const BOTTLES = ["terra","asahi","bigwave","jinro"];
 
 document.getElementById("out").innerHTML = `
-<div class="page"><div class="cols">
+<div class="page text"><div class="cols">
   <div>${LOGO}${block("coffee",0,6)}</div>
   <div>${block("coffee",6,undefined,false)}${block("noncoffee")}</div>
 </div>${foot}</div>
 
-<div class="page"><div class="cols">
+<div class="page text"><div class="cols">
   <div>${LOGO}${block("ade")}${block("tea",0,5)}</div>
   <div>${block("tea",5,undefined,false)}${block("dessert")}</div>
 </div>${foot}</div>
@@ -93,6 +93,17 @@ document.getElementById("out").innerHTML = `
   <div class="alc"><div><h2>ALCOHOL</h2><div class="list">${alc.map(a=>`<div>${esc(a.name)} ${esc(a.en)} ${a.price}원</div>`).join("")}</div></div>
   <div class="bottles">${BOTTLES.map(b=>`<img src="images/print/${b}.png" alt="">`).join("")}</div></div>
 ${foot}</div>`;
+
+/* 1·2장: 글자 크기와 간격을 페이지 높이에 맞게 자동 조절 */
+const MM = 96/25.4;
+window.addEventListener("load", () => document.querySelectorAll(".page.text").forEach(pg => {
+  const limit = pg.getBoundingClientRect().top + (297 - 22) * MM;
+  const fits = () => [...pg.querySelectorAll(".cols > div")].every(c => {
+    const last = c.lastElementChild.lastElementChild; return last.getBoundingClientRect().bottom <= limit; });
+  const search = (v, lo, hi) => { for (let i=0;i<20;i++){ const m=(lo+hi)/2; pg.style.setProperty(v,m); fits()?lo=m:hi=m; } pg.style.setProperty(v,lo); };
+  search("--k", 1, 1.2);
+  search("--g", 1, 4);
+}));
 </script>
 </body>
 </html>
