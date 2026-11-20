@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>INDIESHOT 메뉴판 (인쇄용)</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<style>
+  @page { size:A4; margin:0; }
+  * { box-sizing:border-box; }
+  body { margin:0; color:#111; font-family:Pretendard,"Noto Sans CJK KR","Noto Sans KR",sans-serif;
+         -webkit-print-color-adjust:exact; print-color-adjust:exact; background:#888; }
+  .page { width:210mm; height:297mm; background:#fff; margin:0 auto; position:relative; overflow:hidden;
+          padding:13mm 12mm 16mm; page-break-after:always; break-after:page; }
+  .page:last-child { page-break-after:auto; break-after:auto; }
+  @media screen { .page { margin:10mm auto; box-shadow:0 2px 12px rgba(0,0,0,.25); } }
+  .cols { display:grid; grid-template-columns:1fr 1fr; column-gap:11mm; height:100%; }
+  .logo { width:64mm; display:block; margin:0 0 7mm 2mm; }
+  h2 { font-size:17pt; font-weight:800; letter-spacing:.04em; margin:0 0 3.5mm; padding-bottom:1.2mm;
+       border-bottom:0.5mm solid #111; }
+  h2 + .item { margin-top:0; }
+  .sec { margin-bottom:5mm; }
+  .item { margin-bottom:4.2mm; }
+  .row { display:flex; justify-content:space-between; align-items:baseline; gap:3mm; }
+  .name { font-size:11.5pt; font-weight:700; }
+  .opt { font-size:7.5pt; font-weight:500; margin-left:1mm; }
+  .price { font-size:10.5pt; font-weight:600; white-space:nowrap; text-align:right; line-height:1.35; }
+  .price small { font-size:7.5pt; margin-right:1mm; }
+  .en { font-size:8.5pt; color:#444; margin-top:.4mm; }
+  .desc { font-size:7.5pt; color:#666; margin-top:.6mm; line-height:1.45; }
+  .add { font-size:7.5pt; color:#666; text-align:right; margin-top:.6mm; }
+  .new { display:inline-block; font-size:6.5pt; font-weight:800; letter-spacing:.06em; color:#fff; background:#111;
+         border-radius:1mm; padding:.3mm 1.3mm; margin-left:1.5mm; vertical-align:1.5pt; }
+  .foot { position:absolute; left:12mm; right:12mm; bottom:8mm; display:flex; justify-content:space-between;
+          font-size:7.5pt; color:#555; }
+  /* 식사 페이지 */
+  .meal h2 { margin-bottom:5mm; }
+  .grid { display:grid; grid-template-columns:1fr 1fr; grid-template-rows:repeat(3, 1fr); gap:5mm 11mm;
+          height:calc(100% - 15mm); }
+  .grid.short { height:calc(100% - 66mm); }
+  .card { display:flex; flex-direction:column; min-height:0; }
+  .card .ph { flex:1; min-height:0; display:flex; align-items:center; justify-content:center; }
+  .card img { max-width:100%; max-height:100%; object-fit:contain; }
+  .card .row { border-bottom:0.3mm solid #111; padding-bottom:1mm; margin-top:1.5mm; }
+  .card .name { font-size:10.5pt; }
+  .card .desc { font-size:8pt; color:#333; }
+  .alc { position:absolute; left:12mm; right:12mm; bottom:17mm; display:flex; justify-content:space-between; align-items:flex-end; }
+  .alc h2 { border:none; margin-bottom:2mm; }
+  .alc .list div { font-size:9.5pt; line-height:1.7; }
+  .alc .bottles { display:flex; gap:6mm; align-items:flex-end; }
+  .alc .bottles img { height:30mm; }
+</style>
+</head>
+<body>
+<div id="out"></div>
+<script src="menu.js"></script>
+<script>
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const sec = id => MENU.find(s => s.id === id);
+const priceHTML = p => typeof p === "string" ? `${p}원`
+  : Object.entries(p).map(([k,v]) => `<div><small>(${k})</small>${v}원</div>`).join("");
+const item = it => `<div class="item"><div class="row"><span class="name">${esc(it.name)}${it.opt?`<span class="opt">(${esc(it.opt)})</span>`:""}${it.isNew?'<span class="new">NEW</span>':""}</span><span class="price">${priceHTML(it.price)}</span></div>
+  ${it.en?`<div class="en">${esc(it.en)}</div>`:""}${it.desc?`<div class="desc">${esc(it.desc)}</div>`:""}${it.add?`<div class="add">${esc(it.add)}</div>`:""}</div>`;
+// [섹션 id, 시작, 끝, 제목 표시 여부]
+const block = (id, a=0, b, title=true) => { const s=sec(id); const its=s.items.slice(a, b ?? s.items.length);
+  return `<div class="sec">${title?`<h2>${s.title}</h2>`:""}${its.map(item).join("")}</div>`; };
+const foot = `<div class="foot"><span>영업 시간: 월, 화, 수, 금, 토, 일 11:00-22:00 / 목요일 휴무</span><span>마지막 주문 : 마감 1시간 전</span></div>`;
+const LOGO = `<img class="logo" src="images/logo.png" alt="INDIESHOT">`;
+const card = it => `<div class="card"><div class="ph"><img src="images/${it.img}" alt=""></div>
+  <div class="row"><span class="name">${esc(it.name)}${it.isNew?'<span class="new">NEW</span>':""}</span><span class="price">${priceHTML(it.price)}</span></div>
+  ${it.desc?`<div class="desc">${esc(it.desc)}</div>`:""}${it.add?`<div class="add">${esc(it.add)}</div>`:""}</div>`;
+
+const meal = sec("meal").items;
+const isPasta = it => /파스타|떡볶이/.test(it.name);
+const mealA = meal.filter(it => !isPasta(it));   // 샐러드·샌드위치·그라탕·스프·샥슈카
+const mealB = meal.filter(isPasta);              // 파스타·떡볶이
+const alc = sec("alcohol").items;
+const BOTTLES = ["terra","asahi","bigwave","jinro"];
+
+document.getElementById("out").innerHTML = `
+<div class="page"><div class="cols">
+  <div>${LOGO}${block("coffee",0,6)}</div>
+  <div>${block("coffee",6,undefined,false)}${block("noncoffee")}</div>
+</div>${foot}</div>
+
+<div class="page"><div class="cols">
+  <div>${LOGO}${block("ade")}${block("tea",0,5)}</div>
+  <div>${block("tea",5,undefined,false)}${block("dessert")}</div>
+</div>${foot}</div>
+
+<div class="page meal"><h2>MEAL</h2><div class="grid">${mealA.map(card).join("")}</div>${foot}</div>
+
+<div class="page meal"><h2>MEAL</h2><div class="grid short">${mealB.map(card).join("")}</div>
+  <div class="alc"><div><h2>ALCOHOL</h2><div class="list">${alc.map(a=>`<div>${esc(a.name)} ${esc(a.en)} ${a.price}원</div>`).join("")}</div></div>
+  <div class="bottles">${BOTTLES.map(b=>`<img src="images/print/${b}.png" alt="">`).join("")}</div></div>
+${foot}</div>`;
+</script>
+</body>
+</html>
